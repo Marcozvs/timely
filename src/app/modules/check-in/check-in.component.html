@@ -1,0 +1,198 @@
+<div
+  class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
+>
+  <div class="w-full max-w-2xl">
+    <!-- Main Card -->
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
+        <div class="flex items-center gap-3">
+          <svg
+            class="w-8 h-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <div>
+            <h1 class="text-2xl font-bold text-white">Check-In</h1>
+            <p class="text-blue-100 text-sm">Register your presence</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form
+        [formGroup]="checkInForm"
+        (ngSubmit)="handleSubmit()"
+        class="p-8 space-y-6"
+      >
+        <!-- Name Field -->
+        <div class="space-y-2">
+          <label for="name" class="block text-sm font-semibold text-gray-700">
+            Full Name
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+
+          <div class="relative">
+            <div
+              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+            >
+              <svg
+                class="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                ></path>
+              </svg>
+            </div>
+
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              placeholder="Enter your full name..."
+              class="w-full pl-10 pr-4 py-3 border rounded-lg transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              [ngClass]="{
+                'border-gray-300 bg-gray-50': !isNameInvalid,
+                'border-red-500 bg-red-50': isNameInvalid
+              }"
+              [disabled]="isLoading || isGettingLocation"
+            />
+          </div>
+
+          <!-- Validation Messages -->
+          @if (isNameInvalid) {
+          <div
+            class="flex items-center gap-2 text-red-600 text-sm mt-2 animate-shake"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            @if (nameControl?.errors?.['required']) {
+            <span>Name is required.</span>
+            } @if (nameControl?.errors?.['minlength']) {
+            <span>Name must be at least 3 characters.</span>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Location Status -->
+        @if (isGettingLocation) {
+        <div
+          class="flex items-center gap-3 text-blue-600 bg-blue-50 p-4 rounded-lg animate-pulse"
+        >
+          <svg
+            class="w-5 h-5 animate-spin"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+            ></path>
+          </svg>
+          <span class="text-sm font-medium">Getting your location...</span>
+        </div>
+        }
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="isLoading || isGettingLocation || checkInForm.invalid"
+          class="w-full py-3 px-6 rounded-lg font-semibold text-white transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
+          [ngClass]="{
+            'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl':
+              !isLoading && !isGettingLocation,
+            'bg-gray-400 cursor-not-allowed': isLoading || isGettingLocation
+          }"
+        >
+          @if (isLoading) {
+          <svg
+            class="w-5 h-5 animate-spin"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <span>Registering...</span>
+          } @else {
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            ></path>
+          </svg>
+          <span>Confirm Check-In</span>
+          }
+        </button>
+
+        <!-- Additional Info -->
+        <div
+          class="text-center text-sm text-gray-500 pt-4 border-t border-gray-100"
+        >
+          <p class="flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            Your location will be registered automatically
+          </p>
+        </div>
+      </form>
+    </div>
+
+    <div class="text-center mt-6 text-gray-600 text-sm">
+      <p>⏰ {{ currentDate | date : "EEEE, dd MMMM yyyy - HH:mm" }}</p>
+    </div>
+  </div>
+</div>
